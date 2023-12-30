@@ -19,11 +19,10 @@ jobs:
 
     - name: Set Tag
       run: |
-        echo "GITHUB_SHA_SHORT=$(echo $GITHUB_SHA | cut -c 1-6)" >> $GITHUB_ENV
         if [[ "${{ github.event_name }}" == 'push' && "${{ github.ref }}" =~ ^refs/tags/ ]]; then
           TAG_OR_SHA="${{ github.event.ref }}"
         else
-          TAG_OR_SHA="${{ github.sha::6 }}"
+          TAG_OR_SHA="$(echo $GITHUB_SHA | cut -c 1-6)"
         fi
         echo "IMAGE_TAG=$TAG_OR_SHA" >> $GITHUB_ENV
     - name: Build Docker Image
