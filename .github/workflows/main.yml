@@ -25,13 +25,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Setup Image env
-    run: |
-      if [[ "${{ github.event_name }}" == 'push' && "${{ github.ref }}" =~ ^refs/tags/ ]]; then
-        TAG_OR_SHA="${{ github.event.ref }}"
-      else
-        TAG_OR_SHA="$(echo $GITHUB_SHA | cut -c 1-6)"
-      fi
-      echo "IMAGE_TAG=$TAG_OR_SHA" >> $GITHUB_ENV
+      run: |
+        if [[ "${{ github.event_name }}" == 'push' && "${{ github.ref }}" =~ ^refs/tags/ ]]; then
+          TAG_OR_SHA="${{ github.event.ref }}"
+        else
+          TAG_OR_SHA="$(echo $GITHUB_SHA | cut -c 1-6)"
+        fi
+        echo "IMAGE_TAG=$TAG_OR_SHA" >> $GITHUB_ENV
 
   build:
     runs-on: ubuntu-latest
