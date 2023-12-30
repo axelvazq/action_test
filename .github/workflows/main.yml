@@ -19,7 +19,8 @@ jobs:
 
     - name: Set Tag
       run: |
-        echo "IMAGE_TAG=${{ github.event_name == 'push' && contains(github.ref, 'refs/tags/') && github.event.ref || (echo $GITHUB_SHA | cut -c 1-6) }}" >> $GITHUB_ENV
+        echo "GITHUB_SHA_SHORT=$(echo $GITHUB_SHA | cut -c 1-6)" >> $GITHUB_ENV
+        echo "IMAGE_TAG=${{ github.event_name == 'push' && contains(github.ref, 'refs/tags/') && github.event.ref || env.GITHUB_SHA_SHORT }}" >> $GITHUB_ENV
 
     - name: Build Docker Image
       run: docker build -t $REGISTRY/$IMAGE_NAME:$IMAGE_TAG .
