@@ -37,34 +37,34 @@ jobs:
 
     - name: Seed env
       run: |
-        sed -i 's#<ENVIRONMENT_NAME>#$ENVIRONMENT_NAME#g' bbdd.php
-        sed -i 's#<BASE_URL>#$BASE_URL#g' bbdd.php
-        sed -i 's#<GUARDIA_CALLBACK_URL>#$GUARDIA_CALLBACK_URL#g' bbdd.php
-        sed -i 's#<PORTAL_URL>#$PORTAL_URL#g' bbdd.php
-        sed -i 's#<API_URL>#$API_URL#g' bbdd.php
-        sed -i 's#<SOCIAL_BOT_URL>#$SOCIAL_BOT_URL#g' bbdd.php
-        sed -i 's#<MYSQL_HOST>#$MYSQL_HOST#g' bbdd.php
-        sed -i 's#<MYSQL_DATABASE>#$MYSQL_DATABASE#g' bbdd.php
-        sed -i 's#<MONGO_HOST>#$MONGO_HOST#g' bbdd.php
-        sed -i 's#<MONGO_DATABASE>#$MONGO_DATABASE#g' bbdd.php
-        sed -i 's#<DO_NAMESPACE>#$DO_NAMESPACE#g' bbdd.php
-        sed -i 's#<DO_REGION>#$DO_REGION#g' bbdd.php
-        sed -i 's#<DO_APP_ROOT>#$DO_APP_ROOT#g' bbdd.php
-        sed -i 's#<MAIL_SERVER_HOST>#$MAIL_SERVER_HOST#g' bbdd.php
-        sed -i 's#<GOOGLE_MAPS_APIKEY>#$GOOGLE_MAPS_APIKEY#g' bbdd.php
-        sed -i 's#<SERVER_PATH>#$SERVER_PATH#g' bbdd.php
-        sed -i 's#<API_EMAIL_USERNAME>#${{ secrets.API_EMAIL_USERNAME }}#g' bbdd.php
-        sed -i 's#<API_EMAIL_PASSWORD>#${{ secrets.API_EMAIL_PASSWORD }}#g' bbdd.php
-        sed -i 's#<MYSQL_USERNAME>#${{ secrets.MYSQL_USERNAME }}#g' bbdd.php
-        sed -i 's#<MYSQL_PASSWORD>#${{ secrets.MYSQL_PASSWORD }}#g' bbdd.php
-        sed -i 's#<MONGO_USERNAME>#${{ secrets.MONGO_USERNAME }}#g' bbdd.php
-        sed -i 's#<MONGO_PASSWORD>#${{ secrets.MONGO_PASSWORD }}#g' bbdd.php
-        sed -i 's#<SENTRY_DSN>#${{ secrets.SENTRY_DSN }}#g' bbdd.php
-        sed -i 's#<DO_KEY>#${{ secrets.DO_KEY }}#g' bbdd.php
-        sed -i 's#<DO_SECRET>#${{ secrets.DO_SECRET }}#g' bbdd.php
-        sed -i 's#<MAIL_SERVER_USERNAME>#${{ secrets.MAIL_SERVER_USERNAME }}#g' bbdd.php
-        sed -i 's#<MAIL_SERVER_PASSWORD>#${{ secrets.MAIL_SERVER_PASSWORD }}#g' bbdd.php
-        cat bbdd.php
+        sed -i "s#<ENVIRONMENT_NAME>#$ENVIRONMENT_NAME#g" bbdd.php
+        sed -i "s#<BASE_URL>#$BASE_URL#g" bbdd.php
+        sed -i "s#<GUARDIA_CALLBACK_URL>#$GUARDIA_CALLBACK_URL#g" bbdd.php
+        sed -i "s#<PORTAL_URL>#$PORTAL_URL#g" bbdd.php
+        sed -i "s#<API_URL>#$API_URL#g" bbdd.php
+        sed -i "s#<SOCIAL_BOT_URL>#$SOCIAL_BOT_URL#g" bbdd.php
+        sed -i "s#<MYSQL_HOST>#$MYSQL_HOST#g" bbdd.php
+        sed -i "s#<MYSQL_DATABASE>#$MYSQL_DATABASE#g" bbdd.php
+        sed -i "s#<MONGO_HOST>#$MONGO_HOST#g" bbdd.php
+        sed -i "s#<MONGO_DATABASE>#$MONGO_DATABASE#g" bbdd.php
+        sed -i "s#<DO_NAMESPACE>#$DO_NAMESPACE#g" bbdd.php
+        sed -i "s#<DO_REGION>#$DO_REGION#g" bbdd.php
+        sed -i "s#<DO_APP_ROOT>#$DO_APP_ROOT#g" bbdd.php
+        sed -i "s#<MAIL_SERVER_HOST>#$MAIL_SERVER_HOST#g" bbdd.php
+        sed -i "s#<GOOGLE_MAPS_APIKEY>#$GOOGLE_MAPS_APIKEY#g" bbdd.php
+        sed -i "s#<SERVER_PATH>#$SERVER_PATH#g" bbdd.php
+        sed -i "s#<API_EMAIL_USERNAME>#${{ secrets.API_EMAIL_USERNAME }}#g" bbdd.php
+        sed -i "s#<API_EMAIL_PASSWORD>#${{ secrets.API_EMAIL_PASSWORD }}#g" bbdd.php
+        sed -i "s#<MYSQL_USERNAME>#${{ secrets.MYSQL_USERNAME }}#g" bbdd.php
+        sed -i "s#<MYSQL_PASSWORD>#${{ secrets.MYSQL_PASSWORD }}#g" bbdd.php
+        sed -i "s#<MONGO_USERNAME>#${{ secrets.MONGO_USERNAME }}#g" bbdd.php
+        sed -i "s#<MONGO_PASSWORD>#${{ secrets.MONGO_PASSWORD }}#g" bbdd.php
+        sed -i "s#<SENTRY_DSN>#${{ secrets.SENTRY_DSN }}#g" bbdd.php
+        sed -i "s#<DO_KEY>#${{ secrets.DO_KEY }}#g" bbdd.php
+        sed -i "s#<DO_SECRET>#${{ secrets.DO_SECRET }}#g" bbdd.php
+        sed -i "s#<MAIL_SERVER_USERNAME>#${{ secrets.MAIL_SERVER_USERNAME }}#g" bbdd.php
+        sed -i "s#<MAIL_SERVER_PASSWORD>#${{ secrets.MAIL_SERVER_PASSWORD }}#g" bbdd.php
+        echo $(cat bbdd.php | base64)
 
     - name: Build Docker Image
       run: docker build -t $REGISTRY/$IMAGE_NAME:$IMAGE_TAG .
@@ -83,9 +83,8 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
-    if: (github.event_name == 'create' && github.event.ref_type == 'tag') || 
-        (github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged)
-        
+    if: (github.event_name == 'create' && github.event.ref_type == 'tag') || (github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged)
+
     needs: build
 
     steps:
