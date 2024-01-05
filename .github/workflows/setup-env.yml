@@ -14,5 +14,5 @@ jobs:
       env:
         HOST_ENV: HOST_${{ inputs.environment }}
       run: |
-      echo $HOST_ENV
-      echo ${{ secrets[$HOST_ENV] }}"
+        echo $HOST_ENV
+        echo ${{ secrets[$HOST_ENV] }}"
