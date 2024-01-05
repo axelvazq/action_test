@@ -1,0 +1,18 @@
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+
+jobs:
+  setup_env:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Create .env file
+      env:
+        HOST_ENV: HOST_${{ inputs.environment }}
+      run: |
+      echo $HOST_ENV
+      echo ${{ secrets[$HOST_ENV] }}"

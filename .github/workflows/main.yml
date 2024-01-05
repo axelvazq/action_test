@@ -1,112 +1,17 @@
-name: Build and Publish
+name: Test action
 
 on:
-  push:
-    tags:
-    - '*'
   pull_request:
     branches:
-    - main
     - dev
-    - testing
     types:
     - opened
     - synchronize
     - closed
 
-env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
-
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
-
-    steps:
-    - name: Setup TAG env
-      run: |
-        if [[ "${{ github.event_name }}" == 'push' && "${{ github.ref }}" =~ ^refs/tags/ ]]; then
-          TAG_OR_SHA="${{ github.event.ref }}"
-        else
-          TAG_OR_SHA="$(echo $GITHUB_SHA | cut -c 1-6)"
-        fi
-        echo "IMAGE_TAG=$TAG_OR_SHA" >> $GITHUB_ENV
-
-    - name: Checkout Repository
-      uses: actions/checkout@v2
-
-    - name: Seed env
-      run: |
-        sed -i "s#<ENVIRONMENT_NAME>#$ENVIRONMENT_NAME#g" bbdd.php
-        sed -i "s#<BASE_URL>#$BASE_URL#g" bbdd.php
-        sed -i "s#<GUARDIA_CALLBACK_URL>#$GUARDIA_CALLBACK_URL#g" bbdd.php
-        sed -i "s#<PORTAL_URL>#$PORTAL_URL#g" bbdd.php
-        sed -i "s#<API_URL>#$API_URL#g" bbdd.php
-        sed -i "s#<SOCIAL_BOT_URL>#$SOCIAL_BOT_URL#g" bbdd.php
-        sed -i "s#<MYSQL_HOST>#$MYSQL_HOST#g" bbdd.php
-        sed -i "s#<MYSQL_DATABASE>#$MYSQL_DATABASE#g" bbdd.php
-        sed -i "s#<MONGO_HOST>#$MONGO_HOST#g" bbdd.php
-        sed -i "s#<MONGO_DATABASE>#$MONGO_DATABASE#g" bbdd.php
-        sed -i "s#<DO_NAMESPACE>#$DO_NAMESPACE#g" bbdd.php
-        sed -i "s#<DO_REGION>#$DO_REGION#g" bbdd.php
-        sed -i "s#<DO_APP_ROOT>#$DO_APP_ROOT#g" bbdd.php
-        sed -i "s#<MAIL_SERVER_HOST>#$MAIL_SERVER_HOST#g" bbdd.php
-        sed -i "s#<GOOGLE_MAPS_APIKEY>#$GOOGLE_MAPS_APIKEY#g" bbdd.php
-        sed -i "s#<SERVER_PATH>#$SERVER_PATH#g" bbdd.php
-        sed -i "s#<API_EMAIL_USERNAME>#${{ secrets.API_EMAIL_USERNAME }}#g" bbdd.php
-        sed -i "s#<API_EMAIL_PASSWORD>#${{ secrets.API_EMAIL_PASSWORD }}#g" bbdd.php
-        sed -i "s#<MYSQL_USERNAME>#${{ secrets.MYSQL_USERNAME }}#g" bbdd.php
-        sed -i "s#<MYSQL_PASSWORD>#${{ secrets.MYSQL_PASSWORD }}#g" bbdd.php
-        sed -i "s#<MONGO_USERNAME>#${{ secrets.MONGO_USERNAME }}#g" bbdd.php
-        sed -i "s#<MONGO_PASSWORD>#${{ secrets.MONGO_PASSWORD }}#g" bbdd.php
-        sed -i "s#<SENTRY_DSN>#${{ secrets.SENTRY_DSN }}#g" bbdd.php
-        sed -i "s#<DO_KEY>#${{ secrets.DO_KEY }}#g" bbdd.php
-        sed -i "s#<DO_SECRET>#${{ secrets.DO_SECRET }}#g" bbdd.php
-        sed -i "s#<MAIL_SERVER_USERNAME>#${{ secrets.MAIL_SERVER_USERNAME }}#g" bbdd.php
-        sed -i "s#<MAIL_SERVER_PASSWORD>#${{ secrets.MAIL_SERVER_PASSWORD }}#g" bbdd.php
-        echo $(cat bbdd.php | base64)
-
-    - name: Build Docker Image
-      run: docker build -t $REGISTRY/$IMAGE_NAME:$IMAGE_TAG .
-
-    - name: Login to GitHub Container Registry
-      uses: docker/login-action@v1
-      with:
-        registry: ghcr.io
-        username: invalid #${{ github.actor }}
-        password: invalid #${{ secrets.GITHUB_TOKEN }}
-
-    - name: Push Docker Image to GitHub Container Registry
-      run: |
-        docker tag $REGISTRY/$IMAGE_NAME:$IMAGE_TAG $REGISTRY/$IMAGE_NAME:$IMAGE_TAG
-        docker push $REGISTRY/$IMAGE_NAME:$IMAGE_TAG
-
-  deploy:
-    runs-on: ubuntu-latest
-    if: (github.event_name == 'create' && github.event.ref_type == 'tag') || (github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged)
-
-    needs: build
-
-    steps:
-    - name: Setup TAG env
-      run: |
-        if [[ "${{ github.event_name }}" == 'push' && "${{ github.ref }}" =~ ^refs/tags/ ]]; then
-          TAG_OR_SHA="${{ github.event.ref }}"
-        else
-          TAG_OR_SHA="$(echo $GITHUB_SHA | cut -c 1-6)"
-        fi
-        echo "IMAGE_TAG=$TAG_OR_SHA" >> $GITHUB_ENV
-
-    - name: Deploy using SSH
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.DEPLOY_HOST }}
-        username: ${{ secrets.DEPLOY_USERNAME }}
-        key: ${{ secrets.DEPLOY_SSH_KEY }}
-        script: |
-          docker login -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} $REGISTRY
-          docker pull $REGISTRY/$IMAGE_NAME:$IMAGE_TAG
-          docker container rm --name $WEB_APP_NAME -f
-          docker run -d --name $WEB_APP_NAME -p $WEB_APP_PORT:$WEB_APP_PORT --restart always $REGISTRY/$IMAGE_NAME:$IMAGE_TAG
-# TODO add envs
-# TODO volumes?
+    uses: uses: axelvazq/action_test/.github/workflows/setup-env.yml@feature/pr
+    with:
+      environment: DEV
