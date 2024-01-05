@@ -1,13 +1,9 @@
-name: Test action
-
 on:
-  pull_request:
-    branches:
-    - dev
-    types:
-    - opened
-    - synchronize
-    - closed
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
 
 jobs:
   setup_env:
@@ -16,7 +12,7 @@ jobs:
     steps:
     - name: Create .env file
       env:
-        HOST_ENV: HOST_${{ vars.ENV_NAME }}
+        HOST_ENV: HOST_${{ inputs.environment }}
       run: |
         echo $HOST_ENV
         echo ${{ secrets[$HOST_ENV] }}"
