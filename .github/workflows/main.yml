@@ -12,6 +12,8 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    uses: axelvazq/action_test/.github/workflows/setup-env.yml@feature/pr
-    with:
-      environment: DEV
+    steps:
+    - name: Load env
+      uses: axelvazq/action_test/.github/workflows/setup-env.yml@feature/pr
+      with:
+        environment: DEV
