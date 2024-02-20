@@ -1,22 +1,23 @@
 name: Build and Publish
 
 on:
-  pull_request:
+  push:
     branches:
-    - main
-    types:
-    - closed
-
-environment: prod
-
+      - main
+    
+env:
+  DEPLOY_ENV: prod
+  
 jobs:
   setup:
     runs-on: ubuntu-latest
+    environment: $DEPLOY_ENV
     steps:
     - name: print env variable
       run: echo ${{ vars.API_URL }}
   setup2:
     runs-on: ubuntu-latest
+    environment: $DEPLOY_ENV
     steps:
     - name: print env variable in setup2
       run: echo ${{ vars.API_URL }}
