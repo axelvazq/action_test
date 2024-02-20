@@ -1,0 +1,16 @@
+name: Build and Publish
+
+on:
+  pull_request:
+    branches:
+    - dev
+    types:
+    - closed
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+    - name: print env variable
+      run: echo ${{ vars.API_URL }}
