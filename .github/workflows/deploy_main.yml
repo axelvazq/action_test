@@ -11,13 +11,13 @@ env:
 jobs:
   setup:
     runs-on: ubuntu-latest
-    environment: ${{ vars.DEPLOY_ENV }}
+    environment: ${{ env.DEPLOY_ENV }}
     steps:
     - name: print env variable
       run: echo ${{ vars.API_URL }}
   setup2:
     runs-on: ubuntu-latest
-    environment: $DEPLOY_ENV
+    environment: ${{ env.DEPLOY_ENV }}
     steps:
     - name: print env variable in setup2
       run: echo ${{ vars.API_URL }}
